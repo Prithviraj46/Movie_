@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Seats</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h2>Book Seats</h2>
+    <form id="booking-form">
+        <div>
+            <label>Movie ID:</label>
+            <input type="text" id="movie-id" name="movieId" readonly>
+        </div>
+        <div>
+            <label>Seat Numbers (comma-separated):</label>
+            <input type="text" id="seat-numbers" name="seatNumbers" required>
+        </div>
+        <div>
+            <label>Total Price:</label>
+            <input type="text" id="total-price" name="totalPrice" required>
+        </div>
+        <button type="submit">Book</button>
+    </form>
+    <script>
+        document.getElementById('booking-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const movieId = document.getElementById('movie-id').value;
+            const seatNumbers = document.getElementById('seat-numbers').value;
+            const totalPrice = document.getElementById('total-price').value;
+            
+            fetch('/api/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ movie: { id: movieId }, seatNumbers, totalPrice })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Booking successful!');
+                window.location.href = '/payment?bookingId=' + data.id;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Booking failed!');
+            });
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('movieId');
+        document.getElementById('movie-id').value = movieId;
+    </script>
+</body>
+</html>

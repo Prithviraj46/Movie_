@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h2>Payment</h2>
+    <form id="payment-form">
+        <div>
+            <label>Booking ID:</label>
+            <input type="text" id="booking-id" name="bookingId" readonly>
+        </div>
+        <div>
+            <label>Amount:</label>
+            <input type="text" id="amount" name="amount" readonly>
+        </div>
+        <div>
+            <label>Card Token:</label>
+            <input type="text" id="card-token" name="token" required>
+        </div>
+        <button type="submit">Pay</button>
+    </form>
+    <script>
+        document.getElementById('payment-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const token = document.getElementById('card-token').value;
+            const amount = document.getElementById('amount').value;
+            
+            fetch('/api/payment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ token, amount })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Payment successful!');
+                window.location.href = '/';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Payment failed!');
+            });
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookingId = urlParams.get('bookingId');
+        document.getElementById('booking-id').value = bookingId;
+
+        // Fetch booking details to get the amount
+        fetch('/api/bookings/' + bookingId)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('amount').value = data.totalPrice;
+            });
+    </script>
+</body>
+</html>

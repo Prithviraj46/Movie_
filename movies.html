@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movies</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h2>Available Movies</h2>
+    <div id="movie-list"></div>
+    <script>
+        fetch('/api/movies')
+            .then(response => response.json())
+            .then(data => {
+                const movieList = document.getElementById('movie-list');
+                data.forEach(movie => {
+                    const movieDiv = document.createElement('div');
+                    movieDiv.innerHTML = `
+                        <h3>${movie.title}</h3>
+                        <p>Genre: ${movie.genre}</p>
+                        <p>Showtime: ${movie.showtime}</p>
+                        <a href="/bookings?movieId=${movie.id}">Book Now</a>
+                    `;
+                    movieList.appendChild(movieDiv);
+                });
+            });
+    </script>
+</body>
+</html>
